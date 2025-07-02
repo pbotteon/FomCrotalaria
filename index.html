@@ -1185,34 +1185,35 @@
     }
 
     async function submitForm() {
-        // Garante que os dados da ração e observações finais estejam atualizados antes do envio
-        saveFeedAndFinalNotesData(); 
+    saveFeedAndFinalNotesData(); // Garante dados atualizados
 
-        const button = document.getElementById("submit-form");
-        button.disabled = true;
-        button.textContent = "Enviando...";
+    const webhookURL = 'https://hooks.zapier.com/hooks/catch/XXXXXXX/YYYYYYY'; // cole aqui a URL do Zapier
 
-        try {
-            await google.script.run
-                .withSuccessHandler(function(response) {
-                    alert("Formulário enviado com sucesso! Obrigado por sua contribuição.");
-                    location.reload();
-                })
-                .withFailureHandler(function(error) {
-                    console.error("Erro ao enviar:", error);
-                    alert("Houve um erro ao enviar o formulário: " + error.message + ". Por favor, tente novamente.");
-                    button.disabled = false;
-                    button.textContent = "Enviar Formulário";
-                })
-                .processForm(savedData); // savedData agora está completo com todas as partes
+    const button = document.getElementById("submit-form");
+    button.disabled = true;
+    button.textContent = "Enviando...";
 
-        } catch (error) {
-            console.error("Erro inesperado no cliente:", error);
-            alert("Houve um erro inesperado. Por favor, tente novamente.");
-            button.disabled = false;
-            button.textContent = "Enviar Formulário";
+    try {
+        const response = await fetch(webhookURL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(savedData)
+        });
+
+        if (response.ok) {
+            alert("Formulário enviado com sucesso!");
+            location.reload();
+        } else {
+            alert("Erro ao enviar: " + response.statusText);
         }
+    } catch (error) {
+        console.error("Erro:", error);
+        alert("Erro inesperado: " + error.message);
+    } finally {
+        button.disabled = false;
+        button.textContent = "Enviar Formulário";
     }
+}
 </script>
 </body>
 </html>
