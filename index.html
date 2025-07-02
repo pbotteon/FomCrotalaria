@@ -1136,8 +1136,13 @@
         }
 
         function validatePart1() {
-            let isValid = true;
-            
+            let isValid {
+                savePropertyData();
+                goToPart2();
+    } else {
+             // ...
+    }
+}
             // Validar campos obrigatórios
             const requiredFields = ['responsible-name', 'telefone', 'farm-name', 'location', 
                                   'total-horses', 'exposed-horses', 'sick-horses', 'dead-horses'];
@@ -1284,7 +1289,7 @@
 
         function startClinicalData() {
             fillingOption = document.querySelector('input[name="filling-option"]:checked').value;
-            const sickCount = parseInt(document.getElementById('sick-horses').value) || 0;
+            const sickCount = parseInt(savedData.propertyData.sickHorses) || 0;
             
             if (fillingOption === 'skip') {
                 // Pular para finalização
