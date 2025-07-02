@@ -13,7 +13,7 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #333;
             background: linear-gradient(135deg, #f5f9f5 0%, #e8f5e8 100%);
@@ -438,8 +438,7 @@
     </style>
 </head>
 <body>
-  <script src="https://apis.google.com/js/api.js"></script> <!-- Adicione esta linha -->
-    
+    <script src="https://apis.google.com/js/api.js"></script>
     <div class="container">
         <div class="header">
             <h1>🐎 Formulário de Análise de Risco</h1>
@@ -470,7 +469,7 @@
                 <label for="consent-checkbox">Li e concordo com os termos acima</label>
             </div>
             <div class="button-group">
-                <button onclick="startForm()" id="start-button">Iniciar Formulário</button>
+                <button onclick="startForm( )" id="start-button">Iniciar Formulário</button>
             </div>
         </div>
 
@@ -704,9 +703,9 @@
                         <select id="animal-status" required>
                             <option value="">Selecione...</option>
                             <option value="recovered">Recuperado</option>
-                            <option value="inRecovery">Em Recuperaçao</option>
-                            <option value="chronic">Crônico</option>
                             <option value="died">Morreu</option>
+                            <option value="euthanized">Eutanasiado</option>
+                            <option value="chronic">Quadro crônico</option>
                         </select>
                         <div class="error-message" id="animal-status-error">Por favor, selecione o status</div>
                     </div>
@@ -803,70 +802,102 @@
     let currentAnimalIndex = 0;
     let totalAnimalsToEvaluate = 0;
     let animalsData = [];
-    let fillingOption = 'all';
+    let fillingOption = \'all\';
     let savedData = {
         propertyData: {},
-        animalsData: []
+        animalsData: [],
+        feedData: {} // Inicializa feedData
     };
 
     // Função principal que roda quando o DOM está pronto
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener(\'DOMContentLoaded\', function() {
         setupEventListeners();
         updateProgress();
         // O botão de iniciar agora está habilitado por padrão no HTML
-        // document.getElementById('start-button').disabled = false; // Não é mais necessário
+        // document.getElementById(\'start-button\').disabled = false; // Não é mais necessário
     });
 
     function setupEventListeners() {
         // Removido o event listener do checkbox de consentimento
-        // document.getElementById('consent-checkbox').addEventListener('change', function() {
-        //     document.getElementById('start-button').disabled = !this.checked;
+        // document.getElementById(\'consent-checkbox\').addEventListener(\'change\', function() {
+        //     document.getElementById(\'start-button\').disabled = !this.checked;
         // });
-        document.getElementById('telefone').addEventListener('input', (e) => formatarTelefone(e.target));
-        ['total-horses', 'exposed-horses', 'sick-horses', 'dead-horses'].forEach(id => {
-            document.getElementById(id).addEventListener('input', validateHerdNumbers);
+        document.getElementById(\'telefone\').addEventListener(\'input\', (e) => formatarTelefone(e.target));
+        [\'total-horses\', \'exposed-horses\', \'sick-horses\', \'dead-horses\'].forEach(id => {
+            document.getElementById(id).addEventListener(\'input\', validateHerdNumbers);
+        });
+
+        // Event listener para o checkbox de consentimento (re-habilitado para controle)
+        document.getElementById(\'consent-checkbox\').addEventListener(\'change\', function() {
+            document.getElementById(\'start-button\').disabled = !this.checked;
+        });
+        // Garante que o botão esteja desabilitado ao carregar se o checkbox não estiver marcado
+        document.getElementById(\'start-button\').disabled = !document.getElementById(\'consent-checkbox\').checked;
+
+        // Event listeners para os radio buttons de diagnóstico
+        document.querySelectorAll(\'input[name="diagnosis-method"]\[type="checkbox"]\]\').forEach(checkbox => {
+            checkbox.addEventListener(\'change\', validateDiagnosisMethod);
+        });
+
+        // Event listeners para os radio buttons de sinais clínicos e parâmetros bioquímicos
+        const radioGroups = [
+            \'weight-loss\', \'anorexia\', \'lethargy\', \'jaundice\', \'photosens\', \'dyspnea\',
+            \'colic\', \'diarrhea\', \'shake\', \'blind\', \'headpressing\', \'ataxia\', \'decubitus\',
+            \'urea\', \'creatinine\', \'alt\', \'ast\', \'total_bilirubin\', \'direct_bilirubin\', \'indirect_bilirubin\'
+        ];
+        radioGroups.forEach(groupName => {
+            document.querySelectorAll(`input[name="${groupName}"]`).forEach(radio => {
+                radio.addEventListener(\'change\', () => {
+                    // Apenas para garantir que o evento de mudança é capturado, sem validação específica aqui
+                });
+            });
         });
     }
 
     // Funções de Navegação
     function showSection(sectionId) {
-        document.querySelectorAll('.section').forEach(section => section.classList.add('hidden'));
-        document.getElementById(sectionId).classList.remove('hidden');
+        document.querySelectorAll(\'.section\').forEach(section => section.classList.add(\'hidden\'));
+        document.getElementById(sectionId).classList.remove(\'hidden\');
     }
 
     function updateProgress() {
-        document.getElementById('progress-bar').style.width = `${(currentStep / 4) * 100}%`;
-        document.getElementById('progress-text').textContent = `Etapa ${currentStep} de 4`;
+        document.getElementById(\'progress-bar\').style.width = `${(currentStep / 4) * 100}%`;
+        document.getElementById(\'progress-text\').textContent = `Etapa ${currentStep} de 4`;
     }
 
     function startForm() {
+        // Verifica se o checkbox de consentimento está marcado antes de iniciar
+        if (!document.getElementById(\'consent-checkbox\').checked) {
+            alert(\'Por favor, leia e concorde com os termos para iniciar o formulário.\');
+            return;
+        }
         currentStep = 1;
-        showSection('part1-section');
+        showSection(\'part1-section\');
         updateProgress();
     }
 
     function goToConsent() {
         currentStep = 1;
-        showSection('consent-section');
+        showSection(\'consent-section\');
         updateProgress();
     }
 
     function goToPart1() {
         currentStep = 1;
-        showSection('part1-section');
+        showSection(\'part1-section\');
         updateProgress();
     }
 
     function goToPart2() {
         currentStep = 2;
         setupPart2();
-        showSection('part2-section');
+        showSection(\'part2-section\');
         updateProgress();
     }
     
     function goToPart3() {
         currentStep = 3;
-        showSection('part3-section');
+        showSection(\'part3-section\');
         updateProgress();
     }
 
@@ -877,77 +908,127 @@
         if (!field || !field.value.trim()) { // Adicionado !field para robustez
             if (errorElement) {
                 errorElement.textContent = message;
-                errorElement.classList.add('show');
+                errorElement.classList.add(\'show\');
             }
             return false;
         }
         if (errorElement) {
-            errorElement.classList.remove('show');
+            errorElement.classList.remove(\'show\');
+        }
+        return true;
+    }
+
+    function validateNumberField(id, errorId, message, min = 0, max = Infinity) {
+        const field = document.getElementById(id);
+        const errorElement = document.getElementById(errorId);
+        const value = parseInt(field.value);
+
+        if (isNaN(value) || value < min || value > max) {
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.classList.add(\'show\');
+            }
+            return false;
+        }
+        if (errorElement) {
+            errorElement.classList.remove(\'show\');
         }
         return true;
     }
 
     function validateHerdNumbers() {
-        const total = parseInt(document.getElementById('total-horses').value) || 0;
-        const exposed = parseInt(document.getElementById('exposed-horses').value) || 0;
-        const sick = parseInt(document.getElementById('sick-horses').value) || 0;
-        const dead = parseInt(document.getElementById('dead-horses').value) || 0;
+        const total = parseInt(document.getElementById(\'total-horses\').value) || 0;
+        const exposed = parseInt(document.getElementById(\'exposed-horses\').value) || 0;
+        const sick = parseInt(document.getElementById(\'sick-horses\').value) || 0;
+        const dead = parseInt(document.getElementById(\'dead-horses\').value) || 0;
         let isValid = true;
 
-        if (exposed > total) { document.getElementById('exposed-horses-error').classList.add('show'); isValid = false; }
-        else { document.getElementById('exposed-horses-error').classList.remove('show'); }
-        if (sick > exposed) { document.getElementById('sick-horses-error').classList.add('show'); isValid = false; }
-        else { document.getElementById('sick-horses-error').classList.remove('show'); }
-        if (dead > sick) { document.getElementById('dead-horses-error').classList.add('show'); isValid = false; }
-        else { document.getElementById('dead-horses-error').classList.remove('show'); }
+        // Reset errors first
+        document.getElementById(\'exposed-horses-error\').classList.remove(\'show\');
+        document.getElementById(\'sick-horses-error\').classList.remove(\'show\');
+        document.getElementById(\'dead-horses-error\').classList.remove(\'show\');
+
+        if (exposed > total) { document.getElementById(\'exposed-horses-error\').classList.add(\'show\'); isValid = false; }
+        if (sick > exposed) { document.getElementById(\'sick-horses-error\').classList.add(\'show\'); isValid = false; }
+        if (dead > sick) { document.getElementById(\'dead-horses-error\').classList.add(\'show\'); isValid = false; }
         return isValid;
+    }
+
+    function validateDiagnosisMethod() {
+        const checkboxes = document.querySelectorAll(\'input[name="diagnosis-method"]\[type="checkbox"]\]\');
+        const errorElement = document.getElementById(\'diagnosis-method-error\');
+        let isChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+
+        if (!isChecked) {
+            errorElement.classList.add(\'show\');
+            return false;
+        } else {
+            errorElement.classList.remove(\'show\');
+            return true;
+        }
     }
 
     function validatePart1() {
         let isValid = true;
-        isValid = validateField('responsible-name', 'responsible-name-error', 'Nome é obrigatório.') && isValid;
-        isValid = validateField('telefone', 'telefone-error', 'Telefone é obrigatório.') && isValid;
-        isValid = validateField('farm-name', 'farm-name-error', 'Nome da propriedade é obrigatório.') && isValid;
-        isValid = validateField('location', 'location-error', 'Localização é obrigatória.') && isValid;
-        isValid = validateField('total-horses', 'total-horses-error', 'Número total é obrigatório.') && isValid;
-        isValid = validateHerdNumbers() && isValid;
+        isValid = validateField(\'responsible-name\', \'responsible-name-error\', \'Nome é obrigatório.\') && isValid;
+        isValid = validateField(\'telefone\', \'telefone-error\', \'Telefone é obrigatório.\') && isValid;
+        isValid = validateField(\'farm-name\', \'farm-name-error\', \'Nome da propriedade é obrigatório.\') && isValid;
+        isValid = validateField(\'location\', \'location-error\', \'Localização é obrigatória.\') && isValid;
+        isValid = validateNumberField(\'total-horses\', \'total-horses-error\', \'Informe um número válido (mínimo 1)\', 1) && isValid;
+        isValid = validateNumberField(\'exposed-horses\', \'exposed-horses-error\', \'Informe um número válido (mínimo 0)\', 0) && isValid;
+        isValid = validateNumberField(\'sick-horses\', \'sick-horses-error\', \'Informe um número válido (mínimo 0)\', 0) && isValid;
+        isValid = validateNumberField(\'dead-horses\', \'dead-horses-error\', \'Informe um número válido (mínimo 0)\', 0) && isValid;
+        isValid = validateHerdNumbers() && isValid; // Valida as relações entre os números
 
         if (isValid) {
             savePropertyData();
             goToPart2();
         } else {
-            alert('Por favor, corrija os erros antes de continuar.');
+            alert(\'Por favor, corrija os erros antes de continuar.\');
         }
     }
 
+    function validatePart3() {
+        let isValid = true;
+        isValid = validateField(\'animal-id\', \'animal-id-error\', \'Identificação é obrigatória.\') && isValid;
+        isValid = validateField(\'animal-sex\', \'animal-sex-error\', \'Sexo é obrigatório.\') && isValid;
+        isValid = validateNumberField(\'animal-age\', \'animal-age-error\', \'Idade é obrigatória.\', 0, 50) && isValid;
+        isValid = validateNumberField(\'exposure-time\', \'exposure-time-error\', \'Tempo de exposição é obrigatório.\', 0) && isValid;
+        isValid = validateField(\'feed-stop-date\', \'feed-stop-date-error\', \'Data de suspensão é obrigatória.\') && isValid;
+        isValid = validateDiagnosisMethod() && isValid;
+        isValid = validateField(\'animal-status\', \'animal-status-error\', \'Status do animal é obrigatório.\') && isValid;
+
+        return isValid;
+    }
+
     function formatarTelefone(input) {
-        let value = input.value.replace(/\D/g, '');
-        value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
-        value = value.replace(/(\d{5})(\d)/, '$1-$2');
+        let value = input.value.replace(/\D/g, \'\');
+        value = value.replace(/^(\d{2})(\d)/g, \'($1) $2\');
+        value = value.replace(/(\d{5})(\d)/, \'$1-$2\');
         input.value = value.slice(0, 15);
     }
 
     // Lógica dos Dados Clínicos
     function setupPart2() {
         const sickCount = savedData.propertyData.sickHorses || 0;
-        document.getElementById('sick-count').textContent = sickCount;
-        document.getElementById('animals-to-evaluate').textContent = sickCount;
-        document.getElementById('animals-evaluated').textContent = animalsData.length;
+        document.getElementById(\'sick-count\').textContent = sickCount;
+        document.getElementById(\'animals-to-evaluate\').textContent = sickCount;
+        document.getElementById(\'animals-evaluated\').textContent = animalsData.length;
     }
 
     function startClinicalData() {
-        fillingOption = document.querySelector('input[name="filling-option"]:checked').value;
+        fillingOption = document.querySelector(\'input[name="filling-option"]:checked\').value;
         const sickCount = parseInt(savedData.propertyData.sickHorses) || 0;
 
-        if (fillingOption === 'skip') {
+        if (fillingOption === \'skip\') {
             finishClinicalData();
             return;
         }
         
-        totalAnimalsToEvaluate = (fillingOption === 'sample') ? Math.min(3, sickCount) : sickCount;
+        totalAnimalsToEvaluate = (fillingOption === \'sample\') ? Math.min(3, sickCount) : sickCount;
 
         if (totalAnimalsToEvaluate === 0) {
-            alert('Não há animais doentes para avaliar. Pulando para a finalização.');
+            alert(\'Não há animais doentes para avaliar. Pulando para a finalização.\');
             finishClinicalData();
             return;
         }
@@ -958,32 +1039,95 @@
     }
 
     function setupAnimalForm() {
-        document.getElementById('current-animal').textContent = currentAnimalIndex + 1;
-        document.getElementById('total-animals').textContent = totalAnimalsToEvaluate;
-        document.getElementById('animal-id').value = '';
-        document.getElementById('animal-sex').value = '';
-        document.getElementById('animal-age').value = '';
+        document.getElementById(\'current-animal\').textContent = currentAnimalIndex + 1;
+        document.getElementById(\'total-animals\').textContent = totalAnimalsToEvaluate;
         
+        // Limpa os campos do formulário do animal para o próximo preenchimento
+        document.getElementById(\'animal-id\').value = \'\';
+        document.getElementById(\'animal-tag\').value = \'\';
+        document.getElementById(\'animal-sex\').value = \'\';
+        document.getElementById(\'animal-age\').value = \'\';
+        document.getElementById(\'exposure-time\').value = \'\';
+        document.getElementById(\'feed-stop-date\').value = \'\';
+        document.getElementById(\'symptoms-date\').value = \'\';
+        document.getElementById(\'vet-confirmation\').value = \'\';
+        document.getElementById(\'animal-status\').value = \'\';
+        document.getElementById(\'additional-notes\').value = \'\';
+
+        // Limpa checkboxes de diagnóstico
+        document.querySelectorAll(\'input[name="diagnosis-method"]\[type="checkbox"]\]\').forEach(checkbox => {
+            checkbox.checked = false;
+        });
+        document.getElementById(\'diagnosis-method-error\').classList.remove(\'show\');
+
+        // Reseta radio buttons de sinais clínicos e parâmetros bioquímicos para \'Não Sei\' ou \'Não Testado\'
+        const radioGroupsToReset = [
+            \'weight-loss\', \'anorexia\', \'lethargy\', \'jaundice\', \'photosens\', \'dyspnea\',
+            \'colic\', \'diarrhea\', \'shake\', \'blind\', \'headpressing\', \'ataxia\', \'decubitus\',
+            \'urea\', \'creatinine\', \'alt\', \'ast\', \'total_bilirubin\', \'direct_bilirubin\', \'indirect_bilirubin\'
+        ];
+        radioGroupsToReset.forEach(groupName => {
+            const unknownOrNotTestedRadio = document.querySelector(`input[name="${groupName}"][value="unknown"]`) ||
+                                           document.querySelector(`input[name="${groupName}"][value="not_tested"]`);
+            if (unknownOrNotTestedRadio) {
+                unknownOrNotTestedRadio.checked = true;
+            }
+        });
+
         const isLastAnimal = (currentAnimalIndex === totalAnimalsToEvaluate - 1);
-        document.getElementById('save-animal').style.display = isLastAnimal ? 'none' : 'inline-block';
-        document.getElementById('finish-clinical').style.display = isLastAnimal ? 'inline-block' : 'none';
+        document.getElementById(\'save-animal\').style.display = isLastAnimal ? \'none\' : \'inline-block\';
+        document.getElementById(\'finish-clinical\').style.display = isLastAnimal ? \'inline-block\' : \'none\';
     }
 
     function saveAnimalData() {
-        if (!validateField('animal-id', 'animal-id-error', 'ID é obrigatório') ||
-            !validateField('animal-sex', 'animal-sex-error', 'Sexo é obrigatório') ||
-            !validateField('animal-age', 'animal-age-error', 'Idade é obrigatória')) {
+        if (!validatePart3()) {
+            alert(\'Por favor, preencha todos os campos obrigatórios do animal.\');
             return;
         }
 
-        animalsData.push({
-            id: document.getElementById('animal-id').value,
-            sex: document.getElementById('animal-sex').value,
-            age: document.getElementById('animal-age').value
-        });
+        const selectedDiagnosisMethods = Array.from(document.querySelectorAll(\'input[name="diagnosis-method"]\[type="checkbox"]:checked\]\')).map(cb => cb.value);
+
+        const animal = {
+            id: document.getElementById(\'animal-id\').value,
+            tag: document.getElementById(\'animal-tag\').value,
+            sex: document.getElementById(\'animal-sex\').value,
+            age: document.getElementById(\'animal-age\').value,
+            exposureTime: document.getElementById(\'exposure-time\').value,
+            feedStopDate: document.getElementById(\'feed-stop-date\').value,
+            symptomsDate: document.getElementById(\'symptoms-date\').value,
+            diagnosisMethod: selectedDiagnosisMethods,
+            vetConfirmation: document.getElementById(\'vet-confirmation\').value,
+            // Sinais Clínicos
+            weightLoss: document.querySelector(\'input[name="weight-loss"]:checked\').value,
+            anorexia: document.querySelector(\'input[name="anorexia"]:checked\').value,
+            lethargy: document.querySelector(\'input[name="lethargy"]:checked\').value,
+            jaundice: document.querySelector(\'input[name="jaundice"]:checked\').value,
+            photosens: document.querySelector(\'input[name="photosens"]:checked\').value,
+            dyspnea: document.querySelector(\'input[name="dyspnea"]:checked\').value,
+            colic: document.querySelector(\'input[name="colic"]:checked\').value,
+            diarrhea: document.querySelector(\'input[name="diarrhea"]:checked\').value,
+            shake: document.querySelector(\'input[name="shake"]:checked\').value,
+            blind: document.querySelector(\'input[name="blind"]:checked\').value,
+            headpressing: document.querySelector(\'input[name="headpressing"]:checked\').value,
+            ataxia: document.querySelector(\'input[name="ataxia"]:checked\').value,
+            decubitus: document.querySelector(\'input[name="decubitus"]:checked\').value,
+            // Parâmetros Bioquímicos
+            urea: document.querySelector(\'input[name="urea"]:checked\').value,
+            creatinine: document.querySelector(\'input[name="creatinine"]:checked\').value,
+            alt: document.querySelector(\'input[name="alt"]:checked\').value,
+            ast: document.querySelector(\'input[name="ast"]:checked\').value,
+            total_bilirubin: document.querySelector(\'input[name="total_bilirubin"]:checked\').value,
+            direct_bilirubin: document.querySelector(\'input[name="direct_bilirubin"]:checked\').value,
+            indirect_bilirubin: document.querySelector(\'input[name="indirect_bilirubin"]:checked\').value,
+            // Evolução do Caso
+            animalStatus: document.getElementById(\'animal-status\').value,
+            additionalNotes: document.getElementById(\'additional-notes\').value
+        };
+
+        animalsData.push(animal);
         
         currentAnimalIndex++;
-        document.getElementById('animals-evaluated').textContent = animalsData.length;
+        document.getElementById(\'animals-evaluated\').textContent = animalsData.length;
 
         if (currentAnimalIndex < totalAnimalsToEvaluate) {
             setupAnimalForm();
@@ -994,29 +1138,45 @@
 
     function finishClinicalData() {
         currentStep = 4;
+        // Antes de ir para a finalização, garanta que os dados da ração e observações finais sejam coletados
+        saveFeedAndFinalNotesData(); 
         generateSummary();
-        showSection('part4-section');
+        showSection(\'part4-section\');
         updateProgress();
     }
 
     // Salvamento e Envio
     function savePropertyData() {
         savedData.propertyData = {
-            responsibleName: document.getElementById('responsible-name').value,
-            vetName: document.getElementById('vet-name').value,
-            phone: document.getElementById('telefone').value,
-            farmName: document.getElementById('farm-name').value,
-            location: document.getElementById('location').value,
-            totalHorses: document.getElementById('total-horses').value,
-            exposedHorses: document.getElementById('exposed-horses').value,
-            sickHorses: document.getElementById('sick-horses').value,
-            deadHorses: document.getElementById('dead-horses').value
+            responsibleName: document.getElementById(\'responsible-name\').value,
+            vetName: document.getElementById(\'vet-name\').value,
+            phone: document.getElementById(\'telefone\').value,
+            farmName: document.getElementById(\'farm-name\').value,
+            location: document.getElementById(\'location\').value,
+            totalHorses: parseInt(document.getElementById(\'total-horses\').value) || 0,
+            exposedHorses: parseInt(document.getElementById(\'exposed-horses\').value) || 0,
+            sickHorses: parseInt(document.getElementById(\'sick-horses\').value) || 0,
+            deadHorses: parseInt(document.getElementById(\'dead-horses\').value) || 0
         };
+    }
+
+    function saveFeedAndFinalNotesData() {
+        savedData.feedData = {
+            brand: document.getElementById(\'feed-brand\').value,
+            batch: document.getElementById(\'feed-batch\').value,
+            type: document.getElementById(\'feed-type\').value,
+            manufactureDate: document.getElementById(\'feed-manufacture-date\').value,
+            expiryDate: document.getElementById(\'feed-expiry-date\').value,
+            storage: document.getElementById(\'feed-storage\').value,
+            labAnalysis: document.getElementById(\'feed-lab-analysis\').value,
+            analysisResult: document.getElementById(\'feed-analysis-result\').value
+        };
+        savedData.finalNotes = document.getElementById(\'final-notes\').value;
     }
 
     function generateSummary() {
         const p = savedData.propertyData;
-        document.getElementById('summary-content').innerHTML = `
+        document.getElementById(\'summary-content\').innerHTML = `
             <p><strong>Propriedade:</strong> ${p.farmName}</p>
             <p><strong>Responsável:</strong> ${p.responsibleName}</p>
             <p><strong>Total de Cavalos:</strong> ${p.totalHorses}</p>
@@ -1024,37 +1184,35 @@
         `;
     }
 
-    async function submitForm( ) {
-    const button = document.getElementById("submit-form");
-    button.disabled = true;
-    button.textContent = "Enviando...";
+    async function submitForm() {
+        // Garante que os dados da ração e observações finais estejam atualizados antes do envio
+        saveFeedAndFinalNotesData(); 
 
-    try {
-        // Chama a função 'processForm' no seu Google Apps Script
-        // 'savedData' será passado como um objeto JavaScript
-        await google.script.run
-            .withSuccessHandler(function(response) {
-                // Esta função é chamada se o Apps Script retornar sucesso
-                alert("Formulário enviado com sucesso! Obrigado por sua contribuição.");
-                location.reload();
-            })
-            .withFailureHandler(function(error) {
-                // Esta função é chamada se o Apps Script retornar um erro
-                console.error("Erro ao enviar:", error);
-                alert("Houve um erro ao enviar o formulário: " + error.message + ". Por favor, tente novamente.");
-                button.disabled = false;
-                button.textContent = "Enviar Formulário";
-            })
-            .processForm(savedData); // Chama a função no Apps Script e passa savedData
+        const button = document.getElementById("submit-form");
+        button.disabled = true;
+        button.textContent = "Enviando...";
 
-    } catch (error) {
-        console.error("Erro inesperado no cliente:", error);
-        alert("Houve um erro inesperado. Por favor, tente novamente.");
-        button.disabled = false;
-        button.textContent = "Enviar Formulário";
+        try {
+            await google.script.run
+                .withSuccessHandler(function(response) {
+                    alert("Formulário enviado com sucesso! Obrigado por sua contribuição.");
+                    location.reload();
+                })
+                .withFailureHandler(function(error) {
+                    console.error("Erro ao enviar:", error);
+                    alert("Houve um erro ao enviar o formulário: " + error.message + ". Por favor, tente novamente.");
+                    button.disabled = false;
+                    button.textContent = "Enviar Formulário";
+                })
+                .processForm(savedData); // savedData agora está completo com todas as partes
+
+        } catch (error) {
+            console.error("Erro inesperado no cliente:", error);
+            alert("Houve um erro inesperado. Por favor, tente novamente.");
+            button.disabled = false;
+            button.textContent = "Enviar Formulário";
+        }
     }
-}
-
 </script>
 </body>
 </html>
