@@ -1592,40 +1592,53 @@
         }
 
         function loadSavedData() {
-            const saved = localStorage.getItem('crotalaria_form_data');
-            if (saved) {
-                try {
-                    savedData = JSON.parse(saved);
-                    animalsData = savedData.animalsData || [];
-                    
-                    // Restaurar dados da propriedade se existirem
-                    if (savedData.propertyData) {
-                        const data = savedData.propertyData;
-                        Object.keys(data).forEach(key => {
-                            const fieldMap = {
-                                responsibleName: 'responsible-name',
-                                vetName: 'vet-name',
-                                phone: 'telefone',
-                                farmName: 'farm-name',
-                                location: 'location',
-                                totalHorses: 'total-horses',
-                                exposedHorses: 'exposed-horses',
-                                sickHorses: 'sick-horses',
-                                deadHorses: 'dead-horses'
-                            };
-                            
-                            const fieldId = fieldMap[key];
-                            if (fieldId && data[key]) {
-                                const field = document.getElementById(fieldId);
-                                if (field) field.value = data[key];
-                            }
-                        });
-                    }
-                } catch (e) {
-                    console.error('Erro ao carregar dados salvos:', e);
+    const saved = localStorage.getItem('crotalaria_form_data');
+    if (!saved) {
+        return; // Se não há nada salvo, não faz nada
+    }
+
+    try {
+        const parsedData = JSON.parse(saved);
+        
+        // Garante que a estrutura base exista antes de tentar preencher
+        savedData = {
+            propertyData: parsedData.propertyData || {},
+            animalsData: parsedData.animalsData || [],
+            additionalData: parsedData.additionalData || {}
+        };
+        
+        animalsData = savedData.animalsData; // Sincroniza a variável global de animais
+
+        // Agora, preenche os campos do formulário de forma segura
+        const propertyFields = savedData.propertyData;
+        if (Object.keys(propertyFields).length > 0) {
+            const fieldMap = {
+                responsibleName: 'responsible-name',
+                vetName: 'vet-name',
+                phone: 'telefone',
+                farmName: 'farm-name',
+                location: 'location',
+                totalHorses: 'total-horses',
+                exposedHorses: 'exposed-horses',
+                sickHorses: 'sick-horses',
+                deadHorses: 'dead-horses'
+            };
+            
+            Object.keys(fieldMap).forEach(key => {
+                const fieldId = fieldMap[key];
+                const field = document.getElementById(fieldId);
+                // Verifica se o campo existe no formulário e se há um valor para ele
+                if (field && propertyFields[key] !== undefined) {
+                    field.value = propertyFields[key];
                 }
-            }
+            });
         }
+    } catch (e) {
+        console.error('Erro ao carregar dados salvos. Resetando armazenamento local.', e);
+        localStorage.removeItem('crotalaria_form_data'); // Limpa dados corrompidos
+    }
+}
+}
     </script>
 </body>
 </html>
