@@ -1214,6 +1214,16 @@
         button.textContent = "Enviar Formulário";
     }
 }
+function startForm() {
+    if (!document.getElementById('consent-checkbox').checked) {
+        alert('Por favor, leia e concorde com os termos para iniciar o formulário.');
+        return;
+    }
+    currentStep = 1;
+    showSection('part1-section');
+    updateProgress();
+}
+
 </script>
 </body>
 </html>
