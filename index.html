@@ -1,3 +1,24 @@
+Com certeza. Analisei o código completo que você enviou, linha por linha. Encontrei alguns erros de sintaxe no HTML e no JavaScript que estavam impedindo o formulário de funcionar corretamente.
+
+A boa notícia é que os erros são pequenos e fáceis de corrigir. A lógica geral do seu formulário está correta.
+
+Abaixo estão as correções e, em seguida, o código completo e funcional para você simplesmente copiar e colar.
+
+### Resumo dos Erros Encontrados e Corrigidos:
+
+1.  **HTML Quebrado na Tabela de Sinais Clínicos:** Na tabela de Sinais Clínicos, você adicionou novas linhas (Tremores, Cegueira, etc.), mas a estrutura das tags HTML (`<tr>`, `<td>`) estava quebrada. Por exemplo, você tinha `</tr><input ...>`, o que é inválido. O `input` de um rádio deve estar dentro de uma célula `<td>`, que por sua vez deve estar dentro de uma linha `<tr>`. **Eu reconstruí essa parte da tabela.**
+2.  **Erro de Sintaxe na Função `validatePart1()`:** Havia um trecho de código solto e uma chave `{` no lugar errado dentro desta função, o que a quebrava completamente. Isso impedia a validação e o avanço da Parte 1 para a Parte 2. **Eu corrigi a sintaxe da função.**
+3.  **Erro de Sintaxe na Função `savePropertyData()`:** Havia uma letra `a` solta no final da função, causando um erro de sintaxe que impedia o salvamento dos dados da propriedade. **Eu removi o caractere extra.**
+4.  **Duplicação da Função `loadSavedData()`:** A função `loadSavedData` estava declarada duas vezes no final do script. **Eu removi a duplicata.**
+5.  **Coleta de Dados Clínicos Incompleta:** A função `collectAnimalData` não estava programada para coletar os novos sinais clínicos (Tremores, Cegueira, etc.) nem os novos parâmetros bioquímicos (Bilirrubinas). **Eu atualizei as listas de coleta.**
+
+---
+
+### Código Corrigido e Funcional
+
+Aqui está a versão completa e corrigida do seu arquivo. **Substitua todo o conteúdo do seu arquivo `index.html` no GitHub por este código abaixo.**
+
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -5,482 +26,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulário de Análise de Risco - Intoxicação por Crotalária</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #f5f9f5 0%, #e8f5e8 100%);
-            min-height: 100vh;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        .header {
-            background: linear-gradient(135deg, #2c7d4a 0%, #1e5d35 100%);
-            color: white;
-            padding: 30px 20px;
-            border-radius: 12px;
-            margin-bottom: 30px;
-            text-align: center;
-            box-shadow: 0 4px 20px rgba(44, 125, 74, 0.3);
-        }
-        
-        .header h1 {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-        
-        .header h2 {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            font-weight: 300;
-        }
-        
-        .progress-container {
-            background: white;
-            border-radius: 50px;
-            padding: 4px;
-            margin: 30px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .progress-bar {
-            height: 12px;
-            background: linear-gradient(90deg, #2c7d4a, #4caf50);
-            border-radius: 50px;
-            color: white;
-            text-align: center;
-            line-height: 12px;
-            font-size: 10px;
-            font-weight: bold;
-            width: 0%;
-            transition: width 0.5s ease;
-            position: relative;
-        }
-        
-        .progress-text {
-            text-align: center;
-            margin-top: 10px;
-            font-weight: 500;
-            color: #2c7d4a;
-        }
-        
-        .section {
-            background: white;
-            padding: 30px;
-            margin-bottom: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            border: 1px solid rgba(44, 125, 74, 0.1);
-        }
-        
-        .section.hidden {
-            display: none;
-        }
-        
-        .section h2 {
-            color: #2c7d4a;
-            margin-bottom: 25px;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .section-icon {
-            font-size: 1.8rem;
-        }
-        
-        fieldset {
-            border: 2px solid #e8f5e8;
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 25px;
-            background: #fafffe;
-        }
-        
-        legend {
-            font-weight: 600;
-            color: #2c7d4a;
-            padding: 0 15px;
-            font-size: 1.1em;
-            background: white;
-        }
-        
-        .form-row {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .form-col {
-            flex: 1;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #333;
-        }
-        
-        .required::after {
-            content: " *";
-            color: #e74c3c;
-            font-weight: bold;
-        }
-        
-        input[type="text"],
-        input[type="tel"],
-        input[type="number"],
-        input[type="date"],
-        input[type="email"],
-        select,
-        textarea {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background: white;
-        }
-        
-        input:focus,
-        select:focus,
-        textarea:focus {
-            outline: none;
-            border-color: #2c7d4a;
-            box-shadow: 0 0 0 3px rgba(44, 125, 74, 0.1);
-        }
-        
-        input.valid {
-            border-color: #27ae60;
-            background: #f8fff8;
-        }
-        
-        input.invalid {
-            border-color: #e74c3c;
-            background: #fff8f8;
-        }
-        
-        .error-message {
-            color: #e74c3c;
-            font-size: 14px;
-            margin-top: 5px;
-            display: none;
-        }
-        
-        .error-message.show {
-            display: block;
-        }
-        
-        .success-message {
-            color: #27ae60;
-            font-size: 14px;
-            margin-top: 5px;
-            display: none;
-        }
-        
-        .success-message.show {
-            display: block;
-        }
-        
-        .button-group {
-            display: flex;
-            gap: 15px;
-            justify-content: flex-end;
-            margin-top: 30px;
-            flex-wrap: wrap;
-        }
-        
-        button {
-            background: linear-gradient(135deg, #2c7d4a 0%, #1e5d35 100%);
-            color: white;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            min-width: 140px;
-        }
-        
-        button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(44, 125, 74, 0.3);
-        }
-        
-        button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .btn-secondary {
-            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
-        }
-        
-        .btn-secondary:hover:not(:disabled) {
-            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.3);
-        }
-        
-        .clinical-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        
-        .clinical-table th {
-            background: linear-gradient(135deg, #2c7d4a 0%, #1e5d35 100%);
-            color: white;
-            padding: 15px 12px;
-            text-align: center;
-            font-weight: 600;
-        }
-        
-        .clinical-table td {
-            padding: 15px 12px;
-            border-bottom: 1px solid #e8f5e8;
-            text-align: center;
-        }
-        
-        .clinical-table tr:nth-child(even) {
-            background-color: #fafffe;
-        }
-        
-        .clinical-table tr:hover {
-            background-color: #f0f7f0;
-        }
-        
-        .clinical-table td:first-child {
-            text-align: left;
-            font-weight: 500;
-        }
-        
-        .checkbox-group,
-        .radio-group {
-            margin: 15px 0;
-        }
-        
-        .checkbox-group label,
-        .radio-group label {
-            display: flex;
-            align-items: center;
-            margin: 12px 0;
-            cursor: pointer;
-            padding: 10px;
-            border-radius: 6px;
-            transition: background-color 0.2s;
-        }
-        
-        .checkbox-group label:hover,
-        .radio-group label:hover {
-            background-color: #f0f7f0;
-        }
-        
-        .checkbox-group input,
-        .radio-group input {
-            margin-right: 12px;
-            width: auto;
-            transform: scale(1.2);
-        }
-        
-        .info-box {
-            background: #e3f7fd;
-            border-left: 4px solid #2196F3;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 0 8px 8px 0;
-        }
-        
-        .info-box.warning {
-            background: #fff3cd;
-            border-left-color: #ffc107;
-        }
-        
-        .info-box.success {
-            background: #d4edda;
-            border-left-color: #28a745;
-        }
-        
-        .consent-terms {
-            background: #f0f7f0;
-            padding: 25px;
-            border-radius: 8px;
-            margin-bottom: 25px;
-            border: 1px solid #c8e6c9;
-        }
-        
-        .consent-terms ul {
-            margin: 15px 0 15px 20px;
-        }
-        
-        .consent-terms li {
-            margin: 8px 0;
-        }
-        
-        .consent-checkbox {
-            display: flex;
-            align-items: center;
-            margin: 25px 0;
-            padding: 15px;
-            background: white;
-            border-radius: 8px;
-            border: 2px solid #e8f5e8;
-        }
-        
-        .consent-checkbox input {
-            margin-right: 15px;
-            width: auto;
-            transform: scale(1.3);
-        }
-        
-        .animal-counter {
-            background: #e8f5e8;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px 0;
-            text-align: center;
-            font-weight: 500;
-        }
-        
-        /* Responsividade */
-        @media (max-width: 768px) {
-            .container {
-                padding: 15px;
-            }
-            
-            .header {
-                padding: 20px 15px;
-            }
-            
-            .header h1 {
-                font-size: 1.5rem;
-            }
-            
-            .section {
-                padding: 20px 15px;
-            }
-            
-            .form-row {
-                flex-direction: column;
-                gap: 0;
-            }
-            
-            fieldset {
-                padding: 15px;
-            }
-            
-            .button-group {
-                justify-content: center;
-            }
-            
-            button {
-                min-width: 120px;
-                padding: 12px 20px;
-            }
-            
-            .clinical-table {
-                font-size: 14px;
-            }
-            
-            .clinical-table th,
-            .clinical-table td {
-                padding: 10px 8px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .header h1 {
-                font-size: 1.3rem;
-            }
-            
-            .header h2 {
-                font-size: 1rem;
-            }
-            
-            .section h2 {
-                font-size: 1.3rem;
-            }
-            
-            .clinical-table {
-                font-size: 12px;
-            }
-            
-            .clinical-table th,
-            .clinical-table td {
-                padding: 8px 6px;
-            }
-            
-            input[type="text"],
-            input[type="tel"],
-            input[type="number"],
-            input[type="date"],
-            input[type="email"],
-            select,
-            textarea {
-                font-size: 16px; /* Evita zoom no iOS */
-            }
-        }
-        
-        /* Animações */
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* Loading spinner */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Configuração do backend */
-        .backend-config {
-            background: #fff3cd;
-            border: 1px solid #ffc107;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        
-        .backend-config h4 {
-            color: #856404;
-            margin-bottom: 10px;
-        }
-        
-        .backend-config input {
-            margin-bottom: 10px;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; background: linear-gradient(135deg, #f5f9f5 0%, #e8f5e8 100%); min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #2c7d4a 0%, #1e5d35 100%); color: white; padding: 30px 20px; border-radius: 12px; margin-bottom: 30px; text-align: center; box-shadow: 0 4px 20px rgba(44, 125, 74, 0.3); }
+        .header h1 { font-size: 2rem; margin-bottom: 10px; }
+        .header h2 { font-size: 1.2rem; opacity: 0.9; font-weight: 300; }
+        .progress-container { background: white; border-radius: 50px; padding: 4px; margin: 30px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .progress-bar { height: 12px; background: linear-gradient(90deg, #2c7d4a, #4caf50); border-radius: 50px; width: 0%; transition: width 0.5s ease; }
+        .progress-text { text-align: center; margin-top: 10px; font-weight: 500; color: #2c7d4a; }
+        .section { background: white; padding: 30px; margin-bottom: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid rgba(44, 125, 74, 0.1); }
+        .section.hidden { display: none; }
+        .section h2 { color: #2c7d4a; margin-bottom: 25px; font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
+        .section-icon { font-size: 1.8rem; }
+        fieldset { border: 2px solid #e8f5e8; border-radius: 12px; padding: 25px; margin-bottom: 25px; background: #fafffe; }
+        legend { font-weight: 600; color: #2c7d4a; padding: 0 15px; font-size: 1.1em; background: white; }
+        .form-row { display: flex; gap: 20px; margin-bottom: 20px; }
+        .form-col { flex: 1; }
+        label { display: block; margin-bottom: 8px; font-weight: 500; color: #333; }
+        .required::after { content: " *"; color: #e74c3c; font-weight: bold; }
+        input[type="text"], input[type="tel"], input[type="number"], input[type="date"], input[type="email"], select, textarea { width: 100%; padding: 14px 16px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; transition: all 0.3s ease; background: white; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #2c7d4a; box-shadow: 0 0 0 3px rgba(44, 125, 74, 0.1); }
+        input.valid { border-color: #27ae60; background: #f8fff8; }
+        input.invalid { border-color: #e74c3c; background: #fff8f8; }
+        .error-message { color: #e74c3c; font-size: 14px; margin-top: 5px; display: none; }
+        .error-message.show { display: block; }
+        .success-message { color: #27ae60; font-size: 14px; margin-top: 5px; display: none; }
+        .success-message.show { display: block; }
+        .button-group { display: flex; gap: 15px; justify-content: flex-end; margin-top: 30px; flex-wrap: wrap; }
+        button { background: linear-gradient(135deg, #2c7d4a 0%, #1e5d35 100%); color: white; border: none; padding: 14px 28px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 500; transition: all 0.3s ease; min-width: 140px; }
+        button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(44, 125, 74, 0.3); }
+        button:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+        .btn-secondary { background: linear-gradient(135deg, #6c757d 0%, #495057 100%); }
+        .btn-secondary:hover:not(:disabled) { box-shadow: 0 6px 20px rgba(108, 117, 125, 0.3); }
+        .clinical-table { width: 100%; border-collapse: collapse; margin: 20px 0; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .clinical-table th { background: linear-gradient(135deg, #2c7d4a 0%, #1e5d35 100%); color: white; padding: 15px 12px; text-align: center; font-weight: 600; }
+        .clinical-table td { padding: 15px 12px; border-bottom: 1px solid #e8f5e8; text-align: center; }
+        .clinical-table tr:nth-child(even) { background-color: #fafffe; }
+        .clinical-table tr:hover { background-color: #f0f7f0; }
+        .clinical-table td:first-child { text-align: left; font-weight: 500; }
+        .checkbox-group, .radio-group { margin: 15px 0; }
+        .checkbox-group label, .radio-group label { display: flex; align-items: center; margin: 12px 0; cursor: pointer; padding: 10px; border-radius: 6px; transition: background-color 0.2s; }
+        .checkbox-group label:hover, .radio-group label:hover { background-color: #f0f7f0; }
+        .checkbox-group input, .radio-group input { margin-right: 12px; width: auto; transform: scale(1.2); }
+        .info-box { background: #e3f7fd; border-left: 4px solid #2196F3; padding: 20px; margin: 20px 0; border-radius: 0 8px 8px 0; }
+        .info-box.warning { background: #fff3cd; border-left-color: #ffc107; }
+        .info-box.success { background: #d4edda; border-left-color: #28a745; }
+        .consent-terms { background: #f0f7f0; padding: 25px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #c8e6c9; }
+        .consent-terms ul { margin: 15px 0 15px 20px; }
+        .consent-terms li { margin: 8px 0; }
+        .consent-checkbox { display: flex; align-items: center; margin: 25px 0; padding: 15px; background: white; border-radius: 8px; border: 2px solid #e8f5e8; }
+        .consent-checkbox input { margin-right: 15px; width: auto; transform: scale(1.3); }
+        .animal-counter { background: #e8f5e8; padding: 15px; border-radius: 8px; margin: 20px 0; text-align: center; font-weight: 500; }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .loading { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @media (max-width: 768px) { .container { padding: 15px; } .header { padding: 20px 15px; } .header h1 { font-size: 1.5rem; } .section { padding: 20px 15px; } .form-row { flex-direction: column; gap: 0; } fieldset { padding: 15px; } .button-group { justify-content: center; } button { min-width: 120px; padding: 12px 20px; } .clinical-table { font-size: 14px; } .clinical-table th, .clinical-table td { padding: 10px 8px; } }
+        @media (max-width: 480px) { .header h1 { font-size: 1.3rem; } .header h2 { font-size: 1rem; } .section h2 { font-size: 1.3rem; } .clinical-table { font-size: 12px; } .clinical-table th, .clinical-table td { padding: 8px 6px; } input[type="text"], input[type="tel"], input[type="number"], input[type="date"], input[type="email"], select, textarea { font-size: 16px; } }
     </style>
 </head>
 <body>
@@ -490,7 +93,7 @@
             <h2>Intoxicação por Crotalária em Equinos</h2>
         </div>
 
-             <div class="progress-container">
+        <div class="progress-container">
             <div class="progress-bar" id="progress-bar"></div>
         </div>
         <div class="progress-text" id="progress-text">Etapa 1 de 4</div>
@@ -498,10 +101,8 @@
         <!-- Termo de Consentimento -->
         <div id="consent-section" class="section">
             <h2><span class="section-icon">📋</span>Termo de Consentimento</h2>
-            
             <div class="consent-terms">
                 <p><strong>Este formulário integra um estudo científico sobre a contaminação de ração equina por <i>Crotalária</i> sp.</strong></p>
-                
                 <p>Ao preenchê-lo, você concorda que:</p>
                 <ul>
                     <li>Os dados serão usados para pesquisa epidemiológica;</li>
@@ -509,29 +110,22 @@
                     <li>A localização e dados clínicos serão analisados de forma agregada;</li>
                     <li>O preenchimento, sempre que possível, deve ser realizado ou supervisionado pelo veterinário responsável.</li>
                 </ul>
-                
                 <p><strong>Seu preenchimento implica aceitação destes termos.</strong></p>
             </div>
-            
             <div class="consent-checkbox">
                 <input type="checkbox" id="consent-checkbox" required>
                 <label for="consent-checkbox">Li e concordo com os termos acima</label>
             </div>
-            
             <div class="button-group">
-                <button onclick="startForm()" id="start-button" disabled>
-                    Iniciar Formulário
-                </button>
+                <button onclick="startForm()" id="start-button" disabled>Iniciar Formulário</button>
             </div>
         </div>
 
         <!-- Parte 1: Dados da Propriedade -->
         <div id="part1-section" class="section hidden">
             <h2><span class="section-icon">🏡</span>Dados da Propriedade</h2>
-            
             <fieldset>
                 <legend>Informações do Responsável</legend>
-                
                 <div class="form-row">
                     <div class="form-col">
                         <label class="required">Nome do responsável pelo preenchimento:</label>
@@ -539,14 +133,12 @@
                         <div class="error-message" id="responsible-name-error">Por favor, informe o nome completo</div>
                     </div>
                 </div>
-                
                 <div class="form-row">
                     <div class="form-col">
                         <label>Veterinário responsável pelo atendimento (opcional):</label>
                         <input type="text" id="vet-name" placeholder="Nome e CRMV">
                     </div>
                 </div>
-                
                 <div class="form-row">
                     <div class="form-col">
                         <label class="required">Telefone para contato (WhatsApp):</label>
@@ -556,10 +148,8 @@
                     </div>
                 </div>
             </fieldset>
-
             <fieldset>
                 <legend>Dados da Propriedade</legend>
-                
                 <div class="form-row">
                     <div class="form-col">
                         <label class="required">Nome da propriedade:</label>
@@ -567,7 +157,6 @@
                         <div class="error-message" id="farm-name-error">Por favor, informe o nome da propriedade</div>
                     </div>
                 </div>
-                
                 <div class="form-row">
                     <div class="form-col">
                         <label class="required">Localização (Cidade/Estado):</label>
@@ -576,10 +165,8 @@
                     </div>
                 </div>
             </fieldset>
-
             <fieldset>
                 <legend>Dados do Rebanho</legend>
-                
                 <div class="form-row">
                     <div class="form-col">
                         <label class="required">Número total de cavalos no rebanho:</label>
@@ -587,7 +174,6 @@
                         <div class="error-message" id="total-horses-error">Informe um número válido (mínimo 1)</div>
                     </div>
                 </div>
-                
                 <div class="form-row">
                     <div class="form-col">
                         <label class="required">Número de cavalos que receberam a ração contaminada:</label>
@@ -595,7 +181,6 @@
                         <div class="error-message" id="exposed-horses-error">Não pode ser maior que o total do rebanho</div>
                     </div>
                 </div>
-                
                 <div class="form-row">
                     <div class="form-col">
                         <label class="required">Número de cavalos que adoeceram:</label>
@@ -603,7 +188,6 @@
                         <div class="error-message" id="sick-horses-error">Não pode ser maior que os expostos</div>
                     </div>
                 </div>
-                
                 <div class="form-row">
                     <div class="form-col">
                         <label class="required">Número de cavalos que morreram:</label>
@@ -612,70 +196,44 @@
                     </div>
                 </div>
             </fieldset>
-
             <div class="button-group">
-                <button type="button" onclick="goToConsent()" class="btn-secondary">
-                    ← Voltar
-                </button>
-                <button type="button" onclick="validatePart1()" id="continue-part1">
-                    Continuar para Dados Clínicos →
-                </button>
+                <button type="button" onclick="goToConsent()" class="btn-secondary">← Voltar</button>
+                <button type="button" onclick="validatePart1()" id="continue-part1">Continuar para Dados Clínicos →</button>
             </div>
         </div>
 
         <!-- Parte 2: Seleção de Animais -->
         <div id="part2-section" class="section hidden">
             <h2><span class="section-icon">🐴</span>Seleção de Animais para Avaliação</h2>
-            
             <div class="info-box">
                 <p><strong>Importante:</strong> Você informou que <span id="sick-count">0</span> cavalos adoeceram. Agora você pode preencher os dados clínicos individuais de cada animal afetado.</p>
             </div>
-            
             <div class="animal-counter">
                 <p>Animais para avaliar: <span id="animals-to-evaluate">0</span></p>
                 <p>Avaliados: <span id="animals-evaluated">0</span></p>
             </div>
-            
             <fieldset>
                 <legend>Opções de Preenchimento</legend>
-                
                 <div class="radio-group">
-                    <label>
-                        <input type="radio" name="filling-option" value="all" checked>
-                        Preencher dados de todos os animais afetados
-                    </label>
-                    <label>
-                        <input type="radio" name="filling-option" value="sample">
-                        Preencher apenas uma amostra representativa
-                    </label>
-                    <label>
-                        <input type="radio" name="filling-option" value="skip">
-                        Pular dados clínicos individuais (apenas dados gerais)
-                    </label>
+                    <label><input type="radio" name="filling-option" value="all" checked> Preencher dados de todos os animais afetados</label>
+                    <label><input type="radio" name="filling-option" value="sample"> Preencher apenas uma amostra representativa</label>
+                    <label><input type="radio" name="filling-option" value="skip"> Pular dados clínicos individuais (apenas dados gerais)</label>
                 </div>
             </fieldset>
-            
             <div class="button-group">
-                <button type="button" onclick="goToPart1()" class="btn-secondary">
-                    ← Voltar
-                </button>
-                <button type="button" onclick="startClinicalData()" id="start-clinical">
-                    Iniciar Dados Clínicos →
-                </button>
+                <button type="button" onclick="goToPart1()" class="btn-secondary">← Voltar</button>
+                <button type="button" onclick="startClinicalData()" id="start-clinical">Iniciar Dados Clínicos →</button>
             </div>
         </div>
 
         <!-- Parte 3: Dados Clínicos -->
         <div id="part3-section" class="section hidden">
             <h2><span class="section-icon">🏥</span>Dados Clínicos Individuais</h2>
-            
             <div class="info-box warning">
                 <p><strong>Animal <span id="current-animal">1</span> de <span id="total-animals">1</span></strong></p>
             </div>
-
             <fieldset>
                 <legend>Identificação do Animal</legend>
-                
                 <div class="form-row">
                     <div class="form-col">
                         <label class="required">Identificação/Nome:</label>
@@ -687,7 +245,6 @@
                         <input type="text" id="animal-tag" placeholder="Ex: BR123456">
                     </div>
                 </div>
-                
                 <div class="form-row">
                     <div class="form-col">
                         <label class="required">Sexo:</label>
@@ -705,10 +262,8 @@
                     </div>
                 </div>
             </fieldset>
-
             <fieldset>
                 <legend>Histórico de Exposição</legend>
-                
                 <div class="form-row">
                     <div class="form-col">
                         <label class="required">Há quanto tempo recebe a ração? (meses)</label>
@@ -721,7 +276,6 @@
                         <div class="error-message" id="feed-stop-date-error">Informe a data de suspensão</div>
                     </div>
                 </div>
-                
                 <div class="form-row">
                     <div class="form-col">
                         <label>Data do início dos sinais clínicos:</label>
@@ -729,31 +283,16 @@
                     </div>
                 </div>
             </fieldset>
-
             <fieldset>
                 <legend>Diagnóstico</legend>
-                
                 <label class="required">Como foi feito o diagnóstico?</label>
                 <div class="checkbox-group">
-                    <label>
-                        <input type="checkbox" name="diagnosis-method" value="clinical">
-                        Sinais clínicos compatíveis
-                    </label>
-                    <label>
-                        <input type="checkbox" name="diagnosis-method" value="lab">
-                        Exames laboratoriais
-                    </label>
-                    <label>
-                        <input type="checkbox" name="diagnosis-method" value="previous">
-                        Casos anteriores em vizinhos/conhecidos
-                    </label>
-                    <label>
-                        <input type="checkbox" name="diagnosis-method" value="social">
-                        Relatos em redes sociais
-                    </label>
+                    <label><input type="checkbox" name="diagnosis-method" value="clinical"> Sinais clínicos compatíveis</label>
+                    <label><input type="checkbox" name="diagnosis-method" value="lab"> Exames laboratoriais</label>
+                    <label><input type="checkbox" name="diagnosis-method" value="previous"> Casos anteriores em vizinhos/conhecidos</label>
+                    <label><input type="checkbox" name="diagnosis-method" value="social"> Relatos em redes sociais</label>
                 </div>
                 <div class="error-message" id="diagnosis-method-error">Selecione pelo menos uma opção</div>
-                
                 <div class="form-row">
                     <div class="form-col">
                         <label>Veterinário confirmou o diagnóstico?</label>
@@ -765,162 +304,48 @@
                     </div>
                 </div>
             </fieldset>
-
             <fieldset>
                 <legend>Sinais Clínicos</legend>
                 <table class="clinical-table">
                     <thead>
-                        <tr>
-                            <th>Sinal Clínico</th>
-                            <th>Sim</th>
-                            <th>Não</th>
-                            <th>Não Sei</th>
-                        </tr>
+                        <tr><th>Sinal Clínico</th><th>Sim</th><th>Não</th><th>Não Sei</th></tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>Emagrecimento</td>
-                            <td><input type="radio" name="weight-loss" value="yes"></td>
-                            <td><input type="radio" name="weight-loss" value="no"></td>
-                            <td><input type="radio" name="weight-loss" value="unknown" checked></td>
-                        </tr>
-                        <tr>
-                            <td>Perda de apetite</td>
-                            <td><input type="radio" name="anorexia" value="yes"></td>
-                            <td><input type="radio" name="anorexia" value="no"></td>
-                            <td><input type="radio" name="anorexia" value="unknown" checked></td>
-                        </tr>
-                        <tr>
-                            <td>Letargia/Apatia</td>
-                            <td><input type="radio" name="lethargy" value="yes"></td>
-                            <td><input type="radio" name="lethargy" value="no"></td>
-                            <td><input type="radio" name="lethargy" value="unknown" checked></td>
-                        </tr>
-                        <tr>
-                            <td>Icterícia (amarelão)</td>
-                            <td><input type="radio" name="jaundice" value="yes"></td>
-                            <td><input type="radio" name="jaundice" value="no"></td>
-                            <td><input type="radio" name="jaundice" value="unknown" checked></td>
-                        </tr>
-                        <tr>
-                            <td>Fotossensibilização</td>
-                            <td><input type="radio" name="photosens" value="yes"></td>
-                            <td><input type="radio" name="photosens" value="no"></td>
-                            <td><input type="radio" name="photosens" value="unknown" checked></td>
-                        </tr>
-                        <tr>
-                            <td>Dificuldade respiratória</td>
-                            <td><input type="radio" name="dyspnea" value="yes"></td>
-                            <td><input type="radio" name="dyspnea" value="no"></td>
-                            <td><input type="radio" name="dyspnea" value="unknown" checked></td>
-                        </tr>
-                        <tr>
-                            <td>Cólica</td>
-                            <td><input type="radio" name="colic" value="yes"></td>
-                            <td><input type="radio" name="colic" value="no"></td>
-                            <td><input type="radio" name="colic" value="unknown" checked></td>
-                        </tr>
-                        <tr>
-                            <td>Diarreia</td>
-                            <td><input type="radio" name="diarrhea" value="yes"></td>
-                            <td><input type="radio" name="diarrhea" value="no"></td>
-                            <td><input type="radio" name="diarrhea" value="unknown" checked></td>
-                        </tr>
-                        <tr>
-                            <td>Tremores</td>
-                        </tr><input type="=radio" name="shake" value="yes"></td>
-                        <td><input type="radio" name="shake" value="no"></td>
-                            <td><input type="radio" name="shake" value="unknown" checked></td>
-                            </tr>
-                        <tr>
-                            <td>Cegueira</td>
-                        </tr><input type="=radio" name="blind" value="yes"></td>
-                        <td><input type="radio" name="blind" value="no"></td>
-                            <td><input type="radio" name="blind" value="unknown" checked></td>
-                            </tr>
-                        <tr>
-                            <td>Precionar a cabeça</td>
-                        </tr><input type="=radio" name="headpressing" value="yes"></td>
-                        <td><input type="radio" name="headpressing" value="no"></td>
-                            <td><input type="radio" name="headpressing" value="unknown" checked></td>
-                            </tr>
-                        <tr>
-                            <td>Andar Alterado</td>
-                        </tr><input type="=radio" name="ataxia" value="yes"></td>
-                        <td><input type="radio" name="ataxia" value="no"></td>
-                            <td><input type="radio" name="ataxia" value="unknown" checked></td>
-                            </tr>
-                        <tr>
-                            <td>Decubito</td>
-                        </tr><input type="=radio" name="decubitus" value="yes"></td>
-                        <td><input type="radio" name="decubitus" value="no"></td>
-                            <td><input type="radio" name="decubitus" value="unknown" checked></td>
-                            </tr>
+                        <tr><td>Emagrecimento</td><td><input type="radio" name="weight-loss" value="yes"></td><td><input type="radio" name="weight-loss" value="no"></td><td><input type="radio" name="weight-loss" value="unknown" checked></td></tr>
+                        <tr><td>Perda de apetite</td><td><input type="radio" name="anorexia" value="yes"></td><td><input type="radio" name="anorexia" value="no"></td><td><input type="radio" name="anorexia" value="unknown" checked></td></tr>
+                        <tr><td>Letargia/Apatia</td><td><input type="radio" name="lethargy" value="yes"></td><td><input type="radio" name="lethargy" value="no"></td><td><input type="radio" name="lethargy" value="unknown" checked></td></tr>
+                        <tr><td>Icterícia (amarelão)</td><td><input type="radio" name="jaundice" value="yes"></td><td><input type="radio" name="jaundice" value="no"></td><td><input type="radio" name="jaundice" value="unknown" checked></td></tr>
+                        <tr><td>Fotossensibilização</td><td><input type="radio" name="photosens" value="yes"></td><td><input type="radio" name="photosens" value="no"></td><td><input type="radio" name="photosens" value="unknown" checked></td></tr>
+                        <tr><td>Dificuldade respiratória</td><td><input type="radio" name="dyspnea" value="yes"></td><td><input type="radio" name="dyspnea" value="no"></td><td><input type="radio" name="dyspnea" value="unknown" checked></td></tr>
+                        <tr><td>Cólica</td><td><input type="radio" name="colic" value="yes"></td><td><input type="radio" name="colic" value="no"></td><td><input type="radio" name="colic" value="unknown" checked></td></tr>
+                        <tr><td>Diarreia</td><td><input type="radio" name="diarrhea" value="yes"></td><td><input type="radio" name="diarrhea" value="no"></td><td><input type="radio" name="diarrhea" value="unknown" checked></td></tr>
+                        <tr><td>Tremores</td><td><input type="radio" name="shake" value="yes"></td><td><input type="radio" name="shake" value="no"></td><td><input type="radio" name="shake" value="unknown" checked></td></tr>
+                        <tr><td>Cegueira</td><td><input type="radio" name="blind" value="yes"></td><td><input type="radio" name="blind" value="no"></td><td><input type="radio" name="blind" value="unknown" checked></td></tr>
+                        <tr><td>Pressionar a cabeça</td><td><input type="radio" name="headpressing" value="yes"></td><td><input type="radio" name="headpressing" value="no"></td><td><input type="radio" name="headpressing" value="unknown" checked></td></tr>
+                        <tr><td>Andar Alterado</td><td><input type="radio" name="ataxia" value="yes"></td><td><input type="radio" name="ataxia" value="no"></td><td><input type="radio" name="ataxia" value="unknown" checked></td></tr>
+                        <tr><td>Decúbito</td><td><input type="radio" name="decubitus" value="yes"></td><td><input type="radio" name="decubitus" value="no"></td><td><input type="radio" name="decubitus" value="unknown" checked></td></tr>
                     </tbody>
                 </table>
             </fieldset>
-
             <fieldset>
                 <legend>Parâmetros Bioquímicos (se disponíveis)</legend>
                 <table class="clinical-table">
                     <thead>
-                        <tr>
-                            <th>Parâmetro</th>
-                            <th>Normal</th>
-                            <th>Alterado</th>
-                            <th>Não Testado</th>
-                        </tr>
+                        <tr><th>Parâmetro</th><th>Normal</th><th>Alterado</th><th>Não Testado</th></tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>Ureia</td>
-                            <td><input type="radio" name="urea" value="normal"></td>
-                            <td><input type="radio" name="urea" value="altered"></td>
-                            <td><input type="radio" name="urea" value="not_tested" checked></td>
-                        </tr>
-                        <tr>
-                            <td>Creatinina</td>
-                            <td><input type="radio" name="creatinine" value="normal"></td>
-                            <td><input type="radio" name="creatinine" value="altered"></td>
-                            <td><input type="radio" name="creatinine" value="not_tested" checked></td>
-                        </tr>
-                        <tr>
-                            <td>ALT</td>
-                            <td><input type="radio" name="alt" value="normal"></td>
-                            <td><input type="radio" name="alt" value="altered"></td>
-                            <td><input type="radio" name="alt" value="not_tested" checked></td>
-                        </tr>
-                        <tr>
-                            <td>AST</td>
-                            <td><input type="radio" name="ast" value="normal"></td>
-                            <td><input type="radio" name="ast" value="altered"></td>
-                            <td><input type="radio" name="ast" value="not_tested" checked></td>
-                        </tr>
-                        <tr>
-                            <td>Bilirrubina Total</td>
-                            <td><input type="radio" name="total_bilirubin" value="normal"></td>
-                            <td><input type="radio" name="total_bilirubin" value="altered"></td>
-                            <td><input type="radio" name="total_bilirubin" value="not_tested" checked></td>
-                            </tr>
-                        <tr>
-                            <td>Bilirrubina Direta</td>
-                            <td><input type="radio" name="direct_bilirubin" value="normal"></td>
-                            <td><input type="radio" name="direct_bilirubin" value="altered"></td>
-                            <td><input type="radio" name="direct_bilirubin" value="not_tested" checked></td>
-                        </tr>
-                        </tr>
-                        <tr>
-                            <td>Bilirrubina Indireta</td>
-                            <td><input type="radio" name="indirect_bilirubin" value="normal"></td>
-                            <td><input type="radio" name="indirect_bilirubin" value="altered"></td>
-                            <td><input type="radio" name="indirect_bilirubin" value="not_tested" checked></td>
+                        <tr><td>Ureia</td><td><input type="radio" name="urea" value="normal"></td><td><input type="radio" name="urea" value="altered"></td><td><input type="radio" name="urea" value="not_tested" checked></td></tr>
+                        <tr><td>Creatinina</td><td><input type="radio" name="creatinine" value="normal"></td><td><input type="radio" name="creatinine" value="altered"></td><td><input type="radio" name="creatinine" value="not_tested" checked></td></tr>
+                        <tr><td>ALT</td><td><input type="radio" name="alt" value="normal"></td><td><input type="radio" name="alt" value="altered"></td><td><input type="radio" name="alt" value="not_tested" checked></td></tr>
+                        <tr><td>AST</td><td><input type="radio" name="ast" value="normal"></td><td><input type="radio" name="ast" value="altered"></td><td><input type="radio" name="ast" value="not_tested" checked></td></tr>
+                        <tr><td>Bilirrubina Total</td><td><input type="radio" name="total_bilirubin" value="normal"></td><td><input type="radio" name="total_bilirubin" value="altered"></td><td><input type="radio" name="total_bilirubin" value="not_tested" checked></td></tr>
+                        <tr><td>Bilirrubina Direta</td><td><input type="radio" name="direct_bilirubin" value="normal"></td><td><input type="radio" name="direct_bilirubin" value="altered"></td><td><input type="radio" name="direct_bilirubin" value="not_tested" checked></td></tr>
+                        <tr><td>Bilirrubina Indireta</td><td><input type="radio" name="indirect_bilirubin" value="normal"></td><td><input type="radio" name="indirect_bilirubin" value="altered"></td><td><input type="radio" name="indirect_bilirubin" value="not_tested" checked></td></tr>
                     </tbody>
                 </table>
             </fieldset>
-
             <fieldset>
                 <legend>Evolução do Caso</legend>
-                
                 <div class="form-row">
                     <div class="form-col">
                         <label class="required">Status atual do animal:</label>
@@ -934,7 +359,6 @@
                         <div class="error-message" id="animal-status-error">Por favor, selecione o status</div>
                     </div>
                 </div>
-                
                 <div class="form-row">
                     <div class="form-col">
                         <label>Observações adicionais:</label>
@@ -942,704 +366,25 @@
                     </div>
                 </div>
             </fieldset>
-
             <div class="button-group">
-                <button type="button" onclick="goToPart2()" class="btn-secondary">
-                    ← Voltar
-                </button>
-                <button type="button" onclick="saveAnimalData()" id="save-animal">
-                    Salvar e Próximo Animal →
-                </button>
-                <button type="button" onclick="finishClinicalData()" id="finish-clinical" style="display: none;">
-                    Finalizar Dados Clínicos →
-                </button>
+                <button type="button" onclick="goToPart2()" class="btn-secondary">← Voltar</button>
+                <button type="button" onclick="saveAnimalData()" id="save-animal">Salvar e Próximo Animal →</button>
+                <button type="button" onclick="finishClinicalData()" id="finish-clinical" style="display: none;">Finalizar Dados Clínicos →</button>
             </div>
         </div>
 
         <!-- Parte 4: Finalização -->
         <div id="part4-section" class="section hidden">
             <h2><span class="section-icon">✅</span>Finalização</h2>
-            
             <div class="info-box success">
                 <p><strong>Parabéns!</strong> Você completou o preenchimento dos dados principais. Agora você pode adicionar informações complementares sobre a ração.</p>
             </div>
-
             <fieldset>
                 <legend>Informações da Ração (Opcional)</legend>
-                
                 <div class="form-row">
                     <div class="form-col">
                         <label>Marca da ração:</label>
                         <input type="text" id="feed-brand" placeholder="Ex: Marca XYZ">
                     </div>
                     <div class="form-col">
-                        <label>Lote da ração:</label>
-                        <input type="text" id="feed-batch" placeholder="Ex: L123456">
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-col">
-                        <label>Data de fabricação:</label>
-                        <input type="date" id="feed-manufacture-date">
-                    </div>
-                </div>
-            </fieldset>
-
-            <fieldset>
-                <legend>Resumo dos Dados</legend>
-                <div id="summary-content">
-                    <!-- Conteúdo será preenchido via JavaScript -->
-                </div>
-            </fieldset>
-
-            <fieldset>
-                <legend>Comentários Gerais</legend>
-                
-                <div class="form-row">
-                    <div class="form-col">
-                        <label>Comentários adicionais sobre o caso:</label>
-                        <textarea id="general-comments" rows="4" placeholder="Descreva qualquer informação adicional que considere relevante para o estudo..."></textarea>
-                    </div>
-                </div>
-            </fieldset>
-
-            <div class="button-group">
-                <button type="button" onclick="goToPart3()" class="btn-secondary">
-                    ← Voltar
-                </button>
-                <button type="button" onclick="submitForm()" id="submit-form">
-                    <span id="submit-text">Enviar Formulário</span>
-                    <span id="submit-loading" class="loading" style="display: none;"></span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Configuração do backend
-        const getBackendUrl = () => 'https://script.google.com/macros/s/AKfycbwBtELMEJ_sTqRIwUwulIcEyNnEcvPbX_usbBLSBdviTXgnpIpnoFByAFEMcmFnQWk/exec';
-
-        // Variáveis globais
-        let currentStep = 1;
-        let currentAnimalIndex = 0;
-        let totalAnimalsToEvaluate = 0;
-        let animalsData = [];
-        let fillingOption = 'all';
-        let savedData = {
-            propertyData: {},
-            animalsData: [],
-            additionalData: {}
-        };
-
-        // Inicialização
-        document.addEventListener('DOMContentLoaded', function() {
-            updateProgress();
-            setupEventListeners();
-            loadSavedData();
-        });
-
-        function setupEventListeners() {
-            // Checkbox de consentimento
-            document.getElementById('consent-checkbox').addEventListener('change', function() {
-                document.getElementById('start-button').disabled = !this.checked;
-            });
-
-            // Formatação de telefone
-            document.getElementById('telefone').addEventListener('input', function() {
-                formatarTelefone(this);
-                validatePhone(this);
-            });
-
-            // Validação de números do rebanho
-            ['total-horses', 'exposed-horses', 'sick-horses', 'dead-horses'].forEach(id => {
-                document.getElementById(id).addEventListener('input', validateHerdNumbers);
-            });
-        }
-
-        // Navegação entre seções
-        function showSection(sectionId) {
-            document.querySelectorAll('.section').forEach(section => {
-                section.classList.add('hidden');
-            });
-            document.getElementById(sectionId).classList.remove('hidden');
-            document.getElementById(sectionId).classList.add('fade-in');
-        }
-
-        function updateProgress() {
-            const progressBar = document.getElementById('progress-bar');
-            const progressText = document.getElementById('progress-text');
-            const percentage = (currentStep / 4) * 100;
-            
-            progressBar.style.width = percentage + '%';
-            progressText.textContent = `Etapa ${currentStep} de 4`;
-        }
-
-        function startForm() {
-            showSection('part1-section');
-            currentStep = 1;
-            updateProgress();
-        }
-
-        function goToConsent() {
-            showSection('consent-section');
-            currentStep = 1;
-            updateProgress();
-        }
-
-        function goToPart1() {
-            showSection('part1-section');
-            currentStep = 1;
-            updateProgress();
-        }
-
-        function goToPart2() {
-            showSection('part2-section');
-            currentStep = 2;
-            updateProgress();
-            setupPart2();
-        }
-
-        function goToPart3() {
-            if (fillingOption === 'skip') {
-                goToPart2();
-                return;
-            }
-            showSection('part3-section');
-            currentStep = 3;
-            updateProgress();
-        }
-
-        // Validações
-        function validateField(field) {
-            const value = field.value.trim();
-            const isValid = field.required ? value !== '' : true;
-            
-            if (field.type === 'number' && value !== '') {
-                const num = parseFloat(value);
-                const min = parseFloat(field.min);
-                const max = parseFloat(field.max);
-                
-                if (isNaN(num) || (min !== undefined && num < min) || (max !== undefined && num > max)) {
-                    showFieldError(field.id, 'Valor inválido');
-                    return false;
-                }
-            }
-            
-            if (!isValid) {
-                showFieldError(field.id, 'Campo obrigatório');
-                return false;
-            }
-            
-            clearFieldError(field);
-            return true;
-        }
-
-        function validatePart1() {
-            let isValid {
-                savePropertyData();
-                goToPart2();
-    } else {
-             // ...
-    }
-}
-            // Validar campos obrigatórios
-            const requiredFields = ['responsible-name', 'telefone', 'farm-name', 'location', 
-                                  'total-horses', 'exposed-horses', 'sick-horses', 'dead-horses'];
-            
-            requiredFields.forEach(fieldId => {
-                const field = document.getElementById(fieldId);
-                if (!validateField(field)) {
-                    isValid = false;
-                }
-            });
-            
-            // Validar telefone
-            const phone = document.getElementById('telefone').value;
-            if (!validatePhoneNumber(phone)) {
-                showFieldError('telefone', 'Formato de telefone inválido');
-                isValid = false;
-            }
-            
-            // Validar números do rebanho
-            if (!validateHerdNumbers()) {
-                isValid = false;
-            }
-            
-            if (isValid) {
-                savePropertyData();
-                goToPart2();
-            } else {
-                alert('Por favor, corrija os erros antes de continuar.');
-            }
-        }
-
-        function validateHerdNumbers() {
-            const total = parseInt(document.getElementById('total-horses').value) || 0;
-            const exposed = parseInt(document.getElementById('exposed-horses').value) || 0;
-            const sick = parseInt(document.getElementById('sick-horses').value) || 0;
-            const dead = parseInt(document.getElementById('dead-horses').value) || 0;
-
-            let isValid = true;
-
-            if (exposed > total) {
-                showFieldError('exposed-horses', 'Não pode ser maior que o total do rebanho');
-                isValid = false;
-            } else {
-                clearFieldError(document.getElementById('exposed-horses'));
-            }
-
-            if (sick > exposed) {
-                showFieldError('sick-horses', 'Não pode ser maior que os expostos');
-                isValid = false;
-            } else {
-                clearFieldError(document.getElementById('sick-horses'));
-            }
-
-            if (dead > sick) {
-                showFieldError('dead-horses', 'Não pode ser maior que os que adoeceram');
-                isValid = false;
-            } else {
-                clearFieldError(document.getElementById('dead-horses'));
-            }
-
-            return isValid;
-        }
-
-        function validatePhone(input) {
-            const isValid = validatePhoneNumber(input.value);
-            showFieldValidation(input, isValid, isValid ? 'Telefone válido' : 'Telefone inválido');
-        }
-
-        function validatePhoneNumber(phone) {
-            const phoneRegex = /^\(\d{2}\)\s\d{5}-\d{4}$/;
-            return phoneRegex.test(phone);
-        }
-
-        function showFieldValidation(field, isValid, message) {
-            const errorElement = document.getElementById(field.id + '-error');
-            const successElement = document.getElementById(field.id + '-success');
-            
-            if (isValid) {
-                field.classList.remove('invalid');
-                field.classList.add('valid');
-                if (errorElement) {
-                    errorElement.classList.remove('show');
-                }
-                if (successElement && message) {
-                    successElement.textContent = message;
-                    successElement.classList.add('show');
-                }
-            } else {
-                field.classList.remove('valid');
-                field.classList.add('invalid');
-                if (successElement) {
-                    successElement.classList.remove('show');
-                }
-                if (errorElement) {
-                    errorElement.textContent = message;
-                    errorElement.classList.add('show');
-                }
-            }
-        }
-
-        function showFieldError(fieldId, message) {
-            const field = document.getElementById(fieldId);
-            const errorElement = document.getElementById(fieldId + '-error');
-            
-            field.classList.add('invalid');
-            if (errorElement) {
-                errorElement.textContent = message;
-                errorElement.classList.add('show');
-            }
-        }
-
-        function clearFieldError(field) {
-            field.classList.remove('invalid');
-            const errorElement = document.getElementById(field.id + '-error');
-            if (errorElement) {
-                errorElement.classList.remove('show');
-            }
-        }
-
-        // Formatação
-        function formatarTelefone(input) {
-            let value = input.value.replace(/\D/g, '');
-            
-            if (value.length >= 11) {
-                value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
-            } else if (value.length >= 7) {
-                value = value.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
-            } else if (value.length >= 3) {
-                value = value.replace(/(\d{2})(\d{0,5})/, '($1) $2');
-            } else if (value.length >= 1) {
-                value = value.replace(/(\d{0,2})/, '($1');
-            }
-            
-            input.value = value;
-        }
-
-        // Dados clínicos
-        function setupPart2() {
-            const sickCount = parseInt(document.getElementById('sick-horses').value) || 0;
-            document.getElementById('sick-count').textContent = sickCount;
-            document.getElementById('animals-to-evaluate').textContent = sickCount;
-            document.getElementById('animals-evaluated').textContent = animalsData.length;
-        }
-
-        function startClinicalData() {
-            fillingOption = document.querySelector('input[name="filling-option"]:checked').value;
-            const sickCount = parseInt(savedData.propertyData.sickHorses) || 0;
-            
-            if (fillingOption === 'skip') {
-                // Pular para finalização
-                showSection('part4-section');
-                currentStep = 4;
-                updateProgress();
-                generateSummary();
-                return;
-            }
-            
-            if (fillingOption === 'sample') {
-                totalAnimalsToEvaluate = Math.min(3, sickCount); // Máximo 3 animais como amostra
-            } else {
-                totalAnimalsToEvaluate = sickCount;
-            }
-            
-            if (totalAnimalsToEvaluate === 0) {
-                alert('Não há animais para avaliar.');
-                return;
-            }
-            
-            currentAnimalIndex = 0;
-            setupAnimalForm();
-            showSection('part3-section');
-            currentStep = 3;
-            updateProgress();
-        }
-
-        function setupAnimalForm() {
-            document.getElementById('current-animal').textContent = currentAnimalIndex + 1;
-            document.getElementById('total-animals').textContent = totalAnimalsToEvaluate;
-            
-            // Limpar formulário
-            clearAnimalForm();
-            
-            // Mostrar/esconder botões
-            const isLastAnimal = currentAnimalIndex === totalAnimalsToEvaluate - 1;
-            document.getElementById('save-animal').style.display = isLastAnimal ? 'none' : 'inline-block';
-            document.getElementById('finish-clinical').style.display = isLastAnimal ? 'inline-block' : 'none';
-        }
-
-        function clearAnimalForm() {
-            // Limpar campos de texto
-            ['animal-id', 'animal-tag', 'exposure-time', 'feed-stop-date', 'symptoms-date', 'additional-notes'].forEach(id => {
-                document.getElementById(id).value = '';
-            });
-            
-            // Limpar selects
-            ['animal-sex', 'vet-confirmation', 'animal-status'].forEach(id => {
-                document.getElementById(id).selectedIndex = 0;
-            });
-            
-            // Limpar idade
-            document.getElementById('animal-age').value = '';
-            
-            // Resetar checkboxes de diagnóstico
-            document.querySelectorAll('input[name="diagnosis-method"]').forEach(cb => {
-                cb.checked = false;
-            });
-            
-            // Resetar radio buttons para "não sei" ou "não avaliado"
-            const radioGroups = [
-                'weight-loss', 'anorexia', 'lethargy', 'jaundice', 'photosens', 
-                'dyspnea', 'colic', 'diarrhea'
-            ];
-            radioGroups.forEach(group => {
-                const unknownRadio = document.querySelector(`input[name="${group}"][value="unknown"]`);
-                if (unknownRadio) unknownRadio.checked = true;
-            });
-            
-            const biochemGroups = ['urea', 'creatinine', 'alt', 'ast', 'bilirubin'];
-            biochemGroups.forEach(group => {
-                const notTestedRadio = document.querySelector(`input[name="${group}"][value="not_tested"]`);
-                if (notTestedRadio) notTestedRadio.checked = true;
-            });
-            
-            // Limpar validações
-            document.querySelectorAll('.invalid').forEach(field => {
-                field.classList.remove('invalid');
-            });
-            document.querySelectorAll('.error-message.show').forEach(error => {
-                error.classList.remove('show');
-            });
-        }
-
-        function validateAnimalData() {
-            let isValid = true;
-            
-            // Campos obrigatórios
-            const requiredFields = ['animal-id', 'animal-sex', 'animal-age', 'exposure-time', 'feed-stop-date', 'animal-status'];
-            requiredFields.forEach(fieldId => {
-                const field = document.getElementById(fieldId);
-                if (!validateField(field)) {
-                    isValid = false;
-                }
-            });
-            
-            // Validar pelo menos um método de diagnóstico
-            const diagnosisMethods = document.querySelectorAll('input[name="diagnosis-method"]:checked');
-            if (diagnosisMethods.length === 0) {
-                document.getElementById('diagnosis-method-error').classList.add('show');
-                isValid = false;
-            } else {
-                document.getElementById('diagnosis-method-error').classList.remove('show');
-            }
-            
-            return isValid;
-        }
-
-        function saveAnimalData() {
-            if (!validateAnimalData()) {
-                alert('Por favor, corrija os erros antes de continuar.');
-                return;
-            }
-            
-            const animalData = collectAnimalData();
-            animalsData.push(animalData);
-            
-            currentAnimalIndex++;
-            
-            if (currentAnimalIndex < totalAnimalsToEvaluate) {
-                setupAnimalForm();
-            } else {
-                finishClinicalData();
-            }
-            
-            // Atualizar contador
-            document.getElementById('animals-evaluated').textContent = animalsData.length;
-            
-            saveDataLocally();
-        }
-
-        function finishClinicalData() {
-            if (currentAnimalIndex < totalAnimalsToEvaluate) {
-                if (!validateAnimalData()) {
-                    alert('Por favor, corrija os erros antes de finalizar.');
-                    return;
-                }
-                
-                const animalData = collectAnimalData();
-                animalsData.push(animalData);
-            }
-            
-            showSection('part4-section');
-            currentStep = 4;
-            updateProgress();
-            generateSummary();
-            saveDataLocally();
-        }
-
-        function collectAnimalData() {
-            const data = {
-                id: document.getElementById('animal-id').value,
-                tag: document.getElementById('animal-tag').value,
-                sex: document.getElementById('animal-sex').value,
-                age: document.getElementById('animal-age').value,
-                exposureTime: document.getElementById('exposure-time').value,
-                feedStopDate: document.getElementById('feed-stop-date').value,
-                symptomsDate: document.getElementById('symptoms-date').value,
-                diagnosisMethods: Array.from(document.querySelectorAll('input[name="diagnosis-method"]:checked')).map(cb => cb.value),
-                vetConfirmation: document.getElementById('vet-confirmation').value,
-                clinicalSigns: {},
-                biochemParams: {},
-                status: document.getElementById('animal-status').value,
-                notes: document.getElementById('additional-notes').value
-            };
-            
-            // Sinais clínicos
-            const clinicalSigns = ['weight-loss', 'anorexia', 'lethargy', 'jaundice', 'photosens', 'dyspnea', 'colic', 'diarrhea'];
-            clinicalSigns.forEach(sign => {
-                const checked = document.querySelector(`input[name="${sign}"]:checked`);
-                if (checked) data.clinicalSigns[sign] = checked.value;
-            });
-            
-            // Parâmetros bioquímicos
-            const biochemParams = ['urea', 'creatinine', 'alt', 'ast', 'bilirubin'];
-            biochemParams.forEach(param => {
-                const checked = document.querySelector(`input[name="${param}"]:checked`);
-                if (checked) data.biochemParams[param] = checked.value;
-            });
-            
-            return data;
-        }
-
-        // Finalização
-        function generateSummary() {
-            const summaryContent = document.getElementById('summary-content');
-            const propertyData = savedData.propertyData;
-            
-            let html = `
-                <div class="patient-card">
-                    <h4>Dados da Propriedade</h4>
-                    <p><strong>Propriedade:</strong> ${propertyData.farmName || 'N/A'}</p>
-                    <p><strong>Localização:</strong> ${propertyData.location || 'N/A'}</p>
-                    <p><strong>Responsável:</strong> ${propertyData.responsibleName || 'N/A'}</p>
-                    <p><strong>Telefone:</strong> ${propertyData.phone || 'N/A'}</p>
-                </div>
-                
-                <div class="patient-card">
-                    <h4>Dados do Rebanho</h4>
-                    <p><strong>Total de cavalos:</strong> ${propertyData.totalHorses || 0}</p>
-                    <p><strong>Expostos à ração:</strong> ${propertyData.exposedHorses || 0}</p>
-                    <p><strong>Adoeceram:</strong> ${propertyData.sickHorses || 0}</p>
-                    <p><strong>Morreram:</strong> ${propertyData.deadHorses || 0}</p>
-                </div>
-                
-                <div class="patient-card">
-                    <h4>Dados Clínicos</h4>
-                    <p><strong>Animais avaliados:</strong> ${animalsData.length}</p>
-                    <p><strong>Opção de preenchimento:</strong> ${getFillingOptionText()}</p>
-                </div>
-            `;
-            
-            summaryContent.innerHTML = html;
-        }
-
-        function getFillingOptionText() {
-            switch(fillingOption) {
-                case 'all': return 'Todos os animais afetados';
-                case 'sample': return 'Amostra representativa';
-                case 'skip': return 'Apenas dados gerais';
-                default: return 'N/A';
-            }
-        }
-
-        async function submitForm() {
-            const submitButton = document.getElementById('submit-form');
-            const submitText = document.getElementById('submit-text');
-            const submitLoading = document.getElementById('submit-loading');
-            
-            // Mostrar loading
-            submitButton.disabled = true;
-            submitText.style.display = 'none';
-            submitLoading.style.display = 'inline-block';
-            
-            // Coletar dados finais
-            const finalData = {
-                propertyData: savedData.propertyData,
-                additionalData: {
-                    feedBrand: document.getElementById('feed-brand').value,
-                    feedBatch: document.getElementById('feed-batch').value,
-                    feedManufactureDate: document.getElementById('feed-manufacture-date').value,
-                    generalComments: document.getElementById('general-comments').value
-                },
-                fillingOption: fillingOption,
-                animalsData: animalsData,
-                submissionDate: new Date().toISOString()
-            };
-            
-            try {
-                const response = await fetch(getBackendUrl(), {//https://script.google.com/macros/s/AKfycbwBtELMEJ_sTqRIwUwulIcEyNnEcvPbX_usbBLSBdviTXgnpIpnoFByAFEMcmFnQWk/exec,
-                    method: 'POST',
-                    body: JSON.stringify(finalData)
-                });
-                const resulText = await response.text();
-                const result = JSON.parse(resultText);
-                
-                if (result.status === 'success') {
-                    alert(`Formulário enviado com sucesso! ID da Propriedade: ${result.propertyID}`);
-                    
-                    // Limpar dados salvos
-                    localStorage.removeItem('crotalaria_form_data');
-                    
-                    // Reset form
-                    location.reload();
-                } else {
-                    throw new Error(result.error || 'Erro desconhecido retornado pelo script');
-                }
-                
-            } catch (error) {
-                console.error('Erro ao enviar formulário:', error);
-                alert(`Erro ao enviar formulário: ${error.message}`);
-                
-                // Restaurar botão
-                submitButton.disabled = false;
-                submitText.style.display = 'inline';
-                submitLoading.style.display = 'none';
-            }
-        }
-
-        // Salvamento local
-        function savePropertyData() {
-            savedData.propertyData = {
-                responsibleName: document.getElementById('responsible-name').value,
-                vetName: document.getElementById('vet-name').value,
-                phone: document.getElementById('telefone').value,
-                farmName: document.getElementById('farm-name').value,
-                location: document.getElementById('location').value,
-                totalHorses: document.getElementById('total-horses').value,
-                exposedHorses: document.getElementById('exposed-horses').value,
-                sickHorses: document.getElementById('sick-horses').value,
-                deadHorses: document.getElementById('dead-horses').value
-            };a
-            saveDataLocally();
-        }
-
-        function saveDataLocally() {
-            savedData.animalsData = animalsData;
-            localStorage.setItem('crotalaria_form_data', JSON.stringify(savedData));
-        }
-
-        function loadSavedData() {
-    const saved = localStorage.getItem('crotalaria_form_data');
-    if (!saved) {
-        return; // Se não há nada salvo, não faz nada
-    }
-
-    try {
-        const parsedData = JSON.parse(saved);
-        
-        // Garante que a estrutura base exista antes de tentar preencher
-        savedData = {
-            propertyData: parsedData.propertyData || {},
-            animalsData: parsedData.animalsData || [],
-            additionalData: parsedData.additionalData || {}
-        };
-        
-        animalsData = savedData.animalsData; // Sincroniza a variável global de animais
-
-        // Agora, preenche os campos do formulário de forma segura
-        const propertyFields = savedData.propertyData;
-        if (Object.keys(propertyFields).length > 0) {
-            const fieldMap = {
-                responsibleName: 'responsible-name',
-                vetName: 'vet-name',
-                phone: 'telefone',
-                farmName: 'farm-name',
-                location: 'location',
-                totalHorses: 'total-horses',
-                exposedHorses: 'exposed-horses',
-                sickHorses: 'sick-horses',
-                deadHorses: 'dead-horses'
-            };
-            
-            Object.keys(fieldMap).forEach(key => {
-                const fieldId = fieldMap[key];
-                const field = document.getElementById(fieldId);
-                // Verifica se o campo existe no formulário e se há um valor para ele
-                if (field && propertyFields[key] !== undefined) {
-                    field.value = propertyFields[key];
-                }
-            });
-        }
-    } catch (e) {
-        console.error('Erro ao carregar dados salvos. Resetando armazenamento local.', e);
-        localStorage.removeItem('crotalaria_form_data'); // Limpa dados corrompidos
-    }
-}
-}
-    </script>
-</body>
-</html>
-
+                        <label>Lote da ra
