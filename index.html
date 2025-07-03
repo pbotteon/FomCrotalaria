@@ -30,6 +30,7 @@
           <li>Os dados serão utilizados exclusivamente para fins científicos.</li>
           <li>As informações coletadas serão tratadas de forma confidencial.</li>
           <li>Você poderá se recusar a responder qualquer pergunta ou encerrar sua participação a qualquer momento, sem nenhum prejuízo.</li>
+        </ul>
       </div>
       <div class="consent-checkbox">
         <input type="checkbox" id="consent-checkbox" />
@@ -60,14 +61,15 @@
         <option value="MG">MG</option>
         <option value="RJ">RJ</option>
         <option value="SP">SP</option>
-   </select>
+      </select>
 
       <div class="button-group">
-        <button type="button" onclick="nextSection('part2-section')">Próximo</button>
+        <button type="button" onclick="nextSection('part3-section')">Próximo</button>
       </div>
     </div>
 
     <!-- Parte 3: Dados Clínicos do Animal -->
+    <div class="section hidden" id="part3-section">
       <h2>3. Dados Clínicos do Animal</h2>
 
       <label for="animal-id">Identificação do Animal:</label>
@@ -91,7 +93,6 @@
         <option value="femea">Fêmea</option>
       </select>
 
-      <label for="sintomas">Sintomas Observados:</label>
       <fieldset id="sintomas">
         <legend>Selecione os sintomas observados:</legend>
         <label><input type="checkbox" name="sintomas" value="apatia"> Apatia</label>
@@ -171,7 +172,7 @@
   </div>
 
   <script>
-    const animais = []; // Armazena os dados de cada animal
+    const animais = [];
     let dadosPropriedade = {};
     let currentStep = 1;
 
@@ -209,10 +210,6 @@
       }
 
       const dados = {
-        propriedade: document.getElementById("propriedade").value,
-        proprietario: document.getElementById("proprietario").value,
-        municipio: document.getElementById("municipio").value,
-        estado: document.getElementById("estado").value,
         animalId: document.getElementById("animal-id").value,
         especie: document.getElementById("especie").value,
         idade: document.getElementById("idade").value,
@@ -237,26 +234,9 @@
 
       document.getElementById("animal-warning").style.display = "block";
       alert("Formulário enviado com sucesso. Você pode inserir os dados do próximo animal.");
-    };
-
-      console.log("Dados enviados:", dados);
-
-      document.getElementById("animal-warning").style.display = "block";
-      alert("Formulário enviado com sucesso. Você pode inserir os dados do próximo animal.");
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      const checkbox = document.getElementById("consent-checkbox");
-      const startButton = document.getElementById("start-button");
-
-      startButton.disabled = !checkbox.checked;
-      checkbox.addEventListener("change", () => {
-        startButton.disabled = !checkbox.checked;
-      });
-
-      startButton.addEventListener("click", startForm);
-    });
-      function finalizarEnvio() {
+    function finalizarEnvio() {
       if (animais.length === 0) {
         alert("Nenhum animal registrado.");
         return;
@@ -270,6 +250,17 @@
       // Aqui entrará a integração com Zapier/Sheets
     }
 
-</script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const checkbox = document.getElementById("consent-checkbox");
+      const startButton = document.getElementById("start-button");
+
+      startButton.disabled = !checkbox.checked;
+      checkbox.addEventListener("change", () => {
+        startButton.disabled = !checkbox.checked;
+      });
+
+      startButton.addEventListener("click", startForm);
+    });
+  </script>
 </body>
 </html>
